@@ -1,5 +1,6 @@
 package main
 
+// importing fmt and container list packages
 import (
 	"container/list"
 	"fmt"

@@ -1,5 +1,6 @@
 package main
 
+// importing fmt package and container/heap
 import (
 	"container/heap"
 	"fmt"
