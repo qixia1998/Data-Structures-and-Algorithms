@@ -4,8 +4,8 @@ package main
 
 // importing fmt,database/sql, net/http, text/template package
 import (
+	//    "fmt"
 	"database/sql"
-	"fmt"
 	//  "log"
 	//  "net/http"
 	//  "text/template"
@@ -24,11 +24,41 @@ func GetConnection() (database *sql.DB) {
 	databaseUser := "root"
 	databasePass := "123456"
 	databaseName := "crm"
-	database, error := sql.Open(databaseDriver, databaseUser+":"+databasePass+"@/"+databaseName)
+	database, error := sql.Open(databaseDriver, databaseUser + ":" + databasePass + "@/" + databaseName)
 	if error != nil {
 		panic(error.Error())
 	}
-	return database
+	return database	
+}
+// GetCustomerById with parameter customerId returns Customer
+func GetCustomerById(CustomerId int) Customer {
+	var database *sql.DB
+	database = GetConnection()
+
+	var error error
+	var rows *sql.Rows
+	rows, error = database.Query("SELECT * FROM Customer WHERE CustomerId=?", CustomerId)
+	if error != nil {
+		panic(error.Error())
+	}
+	//fmt.Println(rows)
+	var customer Customer
+	customer = Customer{}
+
+	for rows.Next() {
+		var customerId int
+		var customerName string
+		var SSN string
+		error = rows.Scan(&customerId, &customerName, &SSN)
+		if error != nil {
+			panic(error.Error())
+		}
+		customer.CustomerId = customerId
+		customer.CustomerName = customerName
+		customer.SSN = SSN
+	}
+	defer database.Close()
+	return customer
 }
 // GetCustomers method returns Customer Array
 func GetCustomers() []Customer {
@@ -49,16 +79,17 @@ func GetCustomers() []Customer {
 	for rows.Next() {
 		var customerId int
 		var customerName string
-		var ssn string
-		error = rows.Scan(&customerId, &customerName, &ssn)
+		var SSN string
+		error = rows.Scan(&customerId, &customerName, &SSN)
 		if error != nil {
 			panic(error.Error())
 		}
 		customer.CustomerId = customerId
 		customer.CustomerName = customerName
-		customer.SSN = ssn
+		customer.SSN = SSN
 		customers = append(customers, customer)
 	}
+
 	defer database.Close()
 
 	return customers
@@ -70,7 +101,7 @@ func InsertCustomer(customer Customer) {
 
 	var error error
 	var insert *sql.Stmt
-	insert, error = database.Prepare("INSERT INTO Customer(CustomerName, SSN) VALUES (?, ?)")
+	insert, error = database.Prepare("INSERT INTO CUSTOMER(CustomerName,SSN) VALUES(?,?)")
 	if error != nil {
 		panic(error.Error())
 	}
@@ -88,7 +119,7 @@ func UpdateCustomer(customer Customer) {
 
 	var error error
 	var update *sql.Stmt
-	update, error = database.Prepare("UPDATE Customer SET CustomerName=?, SSN=? WHERE CustomerId=?")
+	update, error = database.Prepare("UPDATE CUSTOMER SET CustomerName=?, SSN=? WHERE CustomerId=?")
 	if error != nil {
 		panic(error.Error())
 	}
@@ -99,8 +130,8 @@ func UpdateCustomer(customer Customer) {
 
 	//return Customer{}
 }
-// Delete Customer method parameter customer
-func deleteCustomer(customer Customer) {
+// Delete Customer method with parameter customer
+func DeleteCustomer(customer Customer) {
 	var database *sql.DB
 	database = GetConnection()
 
@@ -118,39 +149,25 @@ func deleteCustomer(customer Customer) {
 	//return Customer{}
 }
 
-func main() {
-
-	var customers []Customer
-	customers = GetCustomers()
-	/*    fmt.Println("Before Insert",customers)
-
-	  var customer Customer
-	  customer.CustomerName = "Arnie Smith"
-	  customer.SSN = "2386343"
-
-	  InsertCustomer(customer)
-
-	  customers = GetCustomers()
-	  fmt.Println("After Insert",customers)
-
-	  fmt.Println("Before Update",customers)
-	  var customer Customer
-	  	customer.CustomerName = "George Thompson"
-	  	customer.SSN = "23233432"
-	  	customer.CustomerId = 5
-	  	UpdateCustomer(customer)
-	  	customers = GetCustomers()
-	  	fmt.Println("After Update",customers)
-	*/
-
-	fmt.Println("Before Delete", customers)
-	var customer Customer
-	customer.CustomerName = "George Thompson"
-	customer.SSN = "23233432"
-	customer.CustomerId = 5
-
-	deleteCustomer(customer)
-	customers = GetCustomers()
-	fmt.Println("After Delete", customers)
-
+/*func main() {
+     var customers []Customer
+    customers = GetCustomers()
+    fmt.Println(customers)
+  //  var customer Customer
+//    customer.CustomerName = "Thomas Smith"
+  //  customer.SSN = "2323343"
+  //  InsertCustomer(customer)
+  //var customer Customer
+  //  customer.CustomerName = "George Thompson"
+  //  customer.SSN = "23233432"
+  //  customer.CustomerId = 2
+  //  UpdateCustomer(customer)
+var customer Customer
+  //customer.CustomerName = "George Thompson"
+  //customer.SSN = "23233432"
+ customer.CustomerId = 2
+    deleteCustomer(customer)
+    customers = GetCustomers()
+    fmt.Println(customers)
 }
+*/
