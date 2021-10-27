@@ -1,2 +1,2 @@
-# Data_Structures-_and-_Algorithms
+# Data_Structures_and_Algorithms
 Data Structures and Algorithms_Programming
