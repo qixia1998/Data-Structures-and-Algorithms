@@ -25,6 +25,6 @@ words.append('ham')
 words.append('spam')
 
 current = words.head
-while current:
+while current is not None:
     print(current.data)
     current = current.next
